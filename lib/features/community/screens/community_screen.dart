@@ -4,6 +4,8 @@ import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
+import 'package:hola/models/community_model.dart';
+import 'package:routemaster/routemaster.dart';
 
 class CommunityScreen extends ConsumerWidget {
   final String name;
@@ -11,6 +13,16 @@ class CommunityScreen extends ConsumerWidget {
     super.key,
     required this.name,
   });
+
+  void navigateToModTools(BuildContext context) {
+    Routemaster.of(context).push('/mod-tools/$name');
+  }
+
+  void joinCommunity(WidgetRef ref, Community community, BuildContext context) {
+    ref
+        .read(communityControllerProvider.notifier)
+        .joinCommunity(community, context);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,7 +75,9 @@ class CommunityScreen extends ConsumerWidget {
                                 ),
                                 community.mods.contains(user.uid)
                                     ? OutlinedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          navigateToModTools(context);
+                                        },
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -75,7 +89,8 @@ class CommunityScreen extends ConsumerWidget {
                                         child: const Text('Mods Tools'),
                                       )
                                     : OutlinedButton(
-                                        onPressed: () {},
+                                        onPressed: () => joinCommunity(
+                                            ref, community, context),
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -87,7 +102,7 @@ class CommunityScreen extends ConsumerWidget {
                                         child: Text(
                                             community.members.contains(user.uid)
                                                 ? 'Joined'
-                                                : 'JOin'),
+                                                : 'Join'),
                                       ),
                               ],
                             ),

@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/constants/constants.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
+import 'package:hola/features/home/delegates/search_community_delegates.dart';
 import 'package:hola/features/home/drawers/community_list_drawer.dart';
+import 'package:hola/features/home/drawers/profile_drawer.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   void displayDrawer(BuildContext context) {
     Scaffold.of(context).openDrawer();
+  }
+
+  void displayEndDrawer(BuildContext context) {
+    Scaffold.of(context).openEndDrawer();
   }
 
   @override
@@ -25,14 +31,21 @@ class HomeScreen extends ConsumerWidget {
         }),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SearchCommunityDelegate(ref),
+              ); //Binding the search delegate to the search button
+            },
             icon: const Icon(Icons.search),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: CircleAvatar(
-              backgroundImage:
-                  NetworkImage(user?.profilePic ?? Constants.avatarDefault),
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () => displayEndDrawer(context),
+              icon: CircleAvatar(
+                backgroundImage:
+                    NetworkImage(user?.profilePic ?? Constants.avatarDefault),
+              ),
             ),
           ),
         ],
@@ -41,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
         child: Text(user?.name ?? ''),
       ),
       drawer: const CommunityListDrawer(),
+      endDrawer: const ProfileDrawer(),
     );
   }
 }

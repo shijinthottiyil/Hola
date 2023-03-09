@@ -1,0 +1,4 @@
+SEARCH:
+for searching we will be using search delegate:
+using delegates we can do search in the same page without navigating to any other page.
+we can do serach in the same page itself.

@@ -52,4 +52,8 @@ class AuthController extends StateNotifier<bool> {
       });
     });
   }
+
+  void logOut() {
+    _authRepository.logOut();
+  }
 }
