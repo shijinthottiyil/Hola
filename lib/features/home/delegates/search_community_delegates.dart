@@ -57,7 +57,6 @@ class SearchCommunityDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     //in the suggestions we want to display the list of community according to what the user is typing
-
     //watch is used because we have to keep listening
     return ref.watch(serachCommunityProvider(query)).when(
         data: (communities) {
@@ -76,6 +75,7 @@ class SearchCommunityDelegate extends SearchDelegate {
           );
         },
         error: (error, stackTrace) => ErrorText(error: error.toString()),
+        // loading: () => const SizedBox());
         loading: () => const Loader());
   }
 }

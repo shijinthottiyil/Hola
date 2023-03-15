@@ -6,6 +6,8 @@ import 'package:hola/features/community/screens/create_community_screen.dart';
 import 'package:hola/features/community/screens/edit_community_screen.dart';
 import 'package:hola/features/community/screens/mod_tools_screen.dart';
 import 'package:hola/features/home/screens/home_screen.dart';
+import 'package:hola/features/post/screens/add_post_type_screen.dart';
+import 'package:hola/features/user_profile/screens/edit_profile_screen.dart';
 import 'package:hola/features/user_profile/screens/user_profile_screen.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -40,9 +42,19 @@ final loggedInRoute = RouteMap(routes: {
           name: routeData.pathParameters['name']!,
         ),
       ),
-  '/:uid': (route) => MaterialPage(
+  '/u/:uid': (routeData) => MaterialPage(
         child: UserProfileScreen(
-          uid: route.pathParameters['uid']!,
+          uid: routeData.pathParameters['uid']!,
+        ),
+      ),
+  '/edit-profile/:uid': (routeData) => MaterialPage(
+        child: EditProfileScreen(
+          uid: routeData.pathParameters['uid']!,
+        ),
+      ),
+  '/add-post/:type': (routeData) => MaterialPage(
+        child: AddPostTypeScreen(
+          type: routeData.pathParameters['type']!,
         ),
       ),
 });

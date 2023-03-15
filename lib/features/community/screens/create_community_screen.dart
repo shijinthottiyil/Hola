@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/common/loader.dart';
@@ -20,9 +22,8 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
   }
 
   void createCommunity() {
-    ref
-        .read(communityControllerProvider.notifier)
-        .createCommunity(communityNameController.text.trim(), context);
+    ref.read(communityControllerProvider.notifier).createCommunity(
+        communityNameController.text.trim().replaceAll(' ', '_'), context);
   }
 
   @override
@@ -60,6 +61,11 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                     ),
                     ElevatedButton(
                       onPressed: createCommunity,
+                      // onPressed: () {
+                      //   log(communityNameController.text
+                      //       .trim()
+                      //       .replaceAll(' ', ''));
+                      // },
                       style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(

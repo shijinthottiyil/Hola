@@ -85,8 +85,9 @@ class CommunityRepository {
   }
 
   Stream<Community> getCommunityByName(String name) {
-    return _communities.doc(name).snapshots().map(
-        (event) => Community.fromMap(event.data() as Map<String, dynamic>));
+    return _communities.doc(name).snapshots().map((event) {
+      return Community.fromMap(event.data() as Map<String, dynamic>);
+    });
   }
 
   //fun for sending image to firebase storage and linking it in the firestore

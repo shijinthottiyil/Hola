@@ -28,7 +28,9 @@ class CommunityScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
     return Scaffold(
-      body: ref.watch(getCommunityByNameProvider(name)).when(
+      body: ref
+          .watch(getCommunityByNameProvider(name.replaceAll('%20', '')))
+          .when(
             data: (community) => SafeArea(
               child: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -120,7 +122,9 @@ class CommunityScreen extends ConsumerWidget {
                 body: const Text('displaying posts'),
               ),
             ),
-            error: (error, stackTrace) => ErrorText(error: error.toString()),
+            error: (error, stackTrace) => ErrorText(
+              error: error.toString(),
+            ),
             loading: () => const Loader(),
           ),
     );
