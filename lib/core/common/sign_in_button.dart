@@ -5,9 +5,13 @@ import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/theme/pallete.dart';
 
 class SignInButton extends ConsumerWidget {
-  const SignInButton({super.key});
-  void signInWithGoogle(WidgetRef ref, BuildContext context) {
-    ref.read(authControllerProvider.notifier).signInWithGoogle(context);
+  final bool isFromLogin;
+  const SignInButton({super.key, this.isFromLogin = true});
+
+  void signInWithGoogle(BuildContext context, WidgetRef ref) {
+    ref
+        .read(authControllerProvider.notifier)
+        .signInWithGoogle(context, isFromLogin);
   }
 
   @override
@@ -16,7 +20,7 @@ class SignInButton extends ConsumerWidget {
       padding: const EdgeInsets.all(18),
       child: ElevatedButton.icon(
         onPressed: () {
-          signInWithGoogle(ref, context);
+          signInWithGoogle(context, ref);
         },
         icon: Image.asset(
           Constants.googlePath,

@@ -5,11 +5,7 @@ import 'package:hola/core/utils.dart';
 import 'package:hola/features/auth/repository/auth_repository.dart';
 import 'package:hola/models/user_model.dart';
 
-final userProvider = StateProvider<UserModel?>(
-  (ref) {
-    return null;
-  },
-);
+final userProvider = StateProvider<UserModel?>((ref) => null);
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) {
@@ -39,9 +35,9 @@ class AuthController extends StateNotifier<bool> {
         super(false);
   Stream<User?> get authStateChange => _authRepository.authStateChange;
   Stream<UserModel> getUserData(String uid) => _authRepository.getUserData(uid);
-  void signInWithGoogle(BuildContext context) async {
+  void signInWithGoogle(BuildContext context, bool isFromLogin) async {
     state = true;
-    final user = await _authRepository.signInWithGoogle();
+    final user = await _authRepository.signInWithGoogle(isFromLogin);
     state = false;
     //l means left and r means right//renamed r here to userModel
     user.fold((l) {
@@ -55,5 +51,16 @@ class AuthController extends StateNotifier<bool> {
 
   void logOut() {
     _authRepository.logOut();
+  }
+
+  void signInAsGuest(BuildContext context) async {
+    state = true;
+    final user = await _authRepository.signInAsGuest();
+    state = false;
+    user.fold(
+      (l) => showSnackBar(context, l.message),
+      (userModel) =>
+          _ref.read(userProvider.notifier).update((state) => userModel),
+    );
   }
 }

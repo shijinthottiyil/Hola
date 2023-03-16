@@ -126,8 +126,8 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
                   const SizedBox(height: 10),
                   if (isTypeImage)
                     GestureDetector(
-                      // onTap: selectBannerImage,
-                      onTap: () {},
+                      onTap: selectBannerImage,
+                      // onTap: () {},
                       child: DottedBorder(
                         borderType: BorderType.RRect,
                         radius: const Radius.circular(10),

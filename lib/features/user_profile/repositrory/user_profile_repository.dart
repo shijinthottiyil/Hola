@@ -5,6 +5,7 @@ import 'package:hola/core/constants/firebase_constants.dart';
 import 'package:hola/core/failure.dart';
 import 'package:hola/core/providers/firebase_providers.dart';
 import 'package:hola/core/type_defs.dart';
+import 'package:hola/models/post_model.dart';
 import 'package:hola/models/user_model.dart';
 
 final userProfileRepositoryProvider = Provider((ref) {
@@ -31,17 +32,21 @@ class UserProfileRepository {
     }
   }
 
-  // Stream<List<Post>> getUserPosts(String uid) {
-  //   return _posts.where('uid', isEqualTo: uid).orderBy('createdAt', descending: true).snapshots().map(
-  //         (event) => event.docs
-  //             .map(
-  //               (e) => Post.fromMap(
-  //                 e.data() as Map<String, dynamic>,
-  //               ),
-  //             )
-  //             .toList(),
-  //       );
-  // }
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _posts
+        .where('uid', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Post.fromMap(
+                  e.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
 
   FutureVoid updateUserKarma(UserModel user) async {
     try {
