@@ -39,7 +39,7 @@ class AuthRepository {
 
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
-  FutureEither<UserModel> signInWithGoogle() async {
+  FutureEither<UserModel> signInWithGoogle(bool isFromLogin) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final googleAuth = await googleUser?.authentication;
@@ -47,8 +47,12 @@ class AuthRepository {
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      UserCredential userCredential;
+      if (isFromLogin) {
+        userCredential = await _auth.signInWithCredential(credential);
+      } else {
+        userCredential = await _auth.signInWithCredential(credential);
+      }
 
       UserModel userModel;
 
@@ -60,7 +64,16 @@ class AuthRepository {
           uid: userCredential.user!.uid,
           isAuthenticated: true,
           karma: 0,
-          awards: [],
+          awards: [
+            'awesomeAns',
+            'gold',
+            'platinum',
+            'helpful',
+            'plusone',
+            'rocket',
+            'thankyou',
+            'til',
+          ],
         );
         log(userCredential.user!.uid);
         await _users.doc(userCredential.user!.uid).set(userModel.toMap());
@@ -73,6 +86,30 @@ class AuthRepository {
       return left(Failure(e.toString()));
       // rethrow;
       // print(e);
+    }
+  }
+
+  FutureEither<UserModel> signInAsGuest() async {
+    try {
+      var userCredential = await _auth.signInAnonymously();
+
+      UserModel userModel = UserModel(
+        name: 'Guest',
+        profilePic: Constants.avatarDefault,
+        banner: Constants.bannerDefault,
+        uid: userCredential.user!.uid,
+        isAuthenticated: false,
+        karma: 0,
+        awards: [],
+      );
+
+      await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+
+      return right(userModel);
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(e.toString()));
     }
   }
 

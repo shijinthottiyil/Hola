@@ -10,6 +10,7 @@ import 'package:hola/core/utils.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/community/repository/community_repository.dart';
 import 'package:hola/models/community_model.dart';
+import 'package:hola/models/post_model.dart';
 import 'package:routemaster/routemaster.dart';
 
 final communityControllerProvider =
@@ -38,6 +39,10 @@ final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
 
 final serachCommunityProvider = StreamProvider.family((ref, String query) {
   return ref.watch(communityControllerProvider.notifier).searchCommunity(query);
+});
+
+final getCommunityPostsProvider = StreamProvider.family((ref, String name) {
+  return ref.read(communityControllerProvider.notifier).getCommunityPosts(name);
 });
 
 class CommunityController extends StateNotifier<bool> {
@@ -105,7 +110,7 @@ class CommunityController extends StateNotifier<bool> {
   }
 
   Stream<List<Community>> getUserCommunities() {
-    final uid = _ref.read(userProvider)!.uid;
+    final uid = _ref.watch(userProvider)!.uid;
     return _communityRepository.getUserCommunities(uid);
   }
 
@@ -163,5 +168,9 @@ class CommunityController extends StateNotifier<bool> {
       (l) => showSnackBar(context, l.message),
       (r) => Routemaster.of(context).pop(),
     );
+  }
+
+  Stream<List<Post>> getCommunityPosts(String name) {
+    return _communityRepository.getCommunityPosts(name);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
+import 'package:hola/core/common/post_card.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
 import 'package:hola/models/community_model.dart';
@@ -27,6 +28,7 @@ class CommunityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     return Scaffold(
       body: ref
           .watch(getCommunityByNameProvider(name.replaceAll('%20', '')))
@@ -75,37 +77,38 @@ class CommunityScreen extends ConsumerWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                community.mods.contains(user.uid)
-                                    ? OutlinedButton(
-                                        onPressed: () {
-                                          navigateToModTools(context);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                if (!isGuest)
+                                  community.mods.contains(user.uid)
+                                      ? OutlinedButton(
+                                          onPressed: () {
+                                            navigateToModTools(context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 25),
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 25),
-                                        ),
-                                        child: const Text('Mods Tools'),
-                                      )
-                                    : OutlinedButton(
-                                        onPressed: () => joinCommunity(
-                                            ref, community, context),
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                          child: const Text('Mods Tools'),
+                                        )
+                                      : OutlinedButton(
+                                          onPressed: () => joinCommunity(
+                                              ref, community, context),
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 25),
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 25),
+                                          child: Text(community.members
+                                                  .contains(user.uid)
+                                              ? 'Joined'
+                                              : 'Join'),
                                         ),
-                                        child: Text(
-                                            community.members.contains(user.uid)
-                                                ? 'Joined'
-                                                : 'Join'),
-                                      ),
                               ],
                             ),
                             Padding(
@@ -119,7 +122,21 @@ class CommunityScreen extends ConsumerWidget {
                     ),
                   ];
                 },
-                body: const Text('displaying posts'),
+                body: ref.watch(getCommunityPostsProvider(name)).when(
+                      data: (data) {
+                        return ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final post = data[index];
+                            return PostCard(post: post);
+                          },
+                        );
+                      },
+                      error: (error, stackTrace) {
+                        return ErrorText(error: error.toString());
+                      },
+                      loading: () => const Loader(),
+                    ),
               ),
             ),
             error: (error, stackTrace) => ErrorText(
