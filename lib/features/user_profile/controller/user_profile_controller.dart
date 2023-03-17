@@ -43,15 +43,15 @@ class UserProfileController extends StateNotifier<bool> {
   void editCommunity({
     required File? profileFile,
     required File? bannerFile,
-    required Uint8List? profileWebFile,
-    required Uint8List? bannerWebFile,
+    // required Uint8List? profileWebFile,
+    // required Uint8List? bannerWebFile,
     required BuildContext context,
     required String name,
   }) async {
     state = true;
     UserModel user = _ref.read(userProvider)!;
 
-    if (profileFile != null || profileWebFile != null) {
+    if (profileFile != null /*|| profileWebFile != null*/) {
       final res = await _storageRepository.storeFile(
         path: 'users/profile',
         id: user.uid,
@@ -64,7 +64,7 @@ class UserProfileController extends StateNotifier<bool> {
       );
     }
 
-    if (bannerFile != null || bannerWebFile != null) {
+    if (bannerFile != null /*|| bannerWebFile != null*/) {
       final res = await _storageRepository.storeFile(
         path: 'users/banner',
         id: user.uid,

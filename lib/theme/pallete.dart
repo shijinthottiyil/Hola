@@ -39,7 +39,7 @@ class Pallete {
     cardColor: greyColor,
     appBarTheme: const AppBarTheme(
       backgroundColor: whiteColor,
-      elevation: 0,
+      elevation: 5,
       iconTheme: IconThemeData(
         color: blackColor,
       ),

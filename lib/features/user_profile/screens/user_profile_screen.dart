@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
-import 'package:hola/core/common/post_card.dart';
+import 'package:hola/core/common/postcard/post_card.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/user_profile/controller/user_profile_controller.dart';
 import 'package:routemaster/routemaster.dart';
@@ -50,7 +50,7 @@ class UserProfileScreen extends ConsumerWidget {
                           Container(
                             alignment: Alignment.bottomLeft,
                             padding: const EdgeInsets.all(20),
-                            child: OutlinedButton(
+                            child: ElevatedButton(
                               onPressed: () => navigateToEditUser(context),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(

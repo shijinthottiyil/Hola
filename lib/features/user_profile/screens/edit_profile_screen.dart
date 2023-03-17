@@ -28,8 +28,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   File? bannerFile;
   File? profileFile;
 
-  Uint8List? bannerWebFile;
-  Uint8List? profileWebFile;
+  // Uint8List? bannerWebFile;
+  // Uint8List? profileWebFile;
   late TextEditingController nameController;
 
   @override
@@ -48,15 +48,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final res = await pickImage();
 
     if (res != null) {
-      if (kIsWeb) {
-        setState(() {
-          bannerWebFile = res.files.first.bytes;
-        });
-      } else {
-        setState(() {
-          bannerFile = File(res.files.first.path!);
-        });
-      }
+      // if (kIsWeb) {
+      //   setState(() {
+      //     bannerWebFile = res.files.first.bytes;
+      //   });
+      // } else {
+      setState(() {
+        bannerFile = File(res.files.first.path!);
+      });
+      // }
     }
   }
 
@@ -64,15 +64,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final res = await pickImage();
 
     if (res != null) {
-      if (kIsWeb) {
-        setState(() {
-          profileWebFile = res.files.first.bytes;
-        });
-      } else {
-        setState(() {
-          profileFile = File(res.files.first.path!);
-        });
-      }
+      // if (kIsWeb) {
+      //   setState(() {
+      //     profileWebFile = res.files.first.bytes;
+      //   });
+      // } else {
+      setState(() {
+        profileFile = File(res.files.first.path!);
+      });
+      // }
     }
   }
 
@@ -82,8 +82,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           bannerFile: bannerFile,
           context: context,
           name: nameController.text.trim(),
-          bannerWebFile: bannerWebFile,
-          profileWebFile: profileWebFile,
+          // bannerWebFile: bannerWebFile,
+          // profileWebFile: profileWebFile,
         );
   }
 
@@ -133,9 +133,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: bannerWebFile != null
-                                        ? Image.memory(bannerWebFile!)
-                                        : bannerFile != null
+                                    child:
+                                        // bannerWebFile != null
+                                        //     ? Image.memory(bannerWebFile!)
+                                        //     :
+                                        bannerFile != null
                                             ? Image.file(bannerFile!)
                                             : user.banner.isEmpty ||
                                                     user.banner ==
@@ -155,13 +157,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 left: 20,
                                 child: GestureDetector(
                                   onTap: selectProfileImage,
-                                  child: profileWebFile != null
-                                      ? CircleAvatar(
-                                          backgroundImage:
-                                              MemoryImage(profileWebFile!),
-                                          radius: 32,
-                                        )
-                                      : profileFile != null
+                                  child:
+                                      // profileWebFile != null
+                                      //     ? CircleAvatar(
+                                      //         backgroundImage:
+                                      //             MemoryImage(profileWebFile!),
+                                      //         radius: 32,
+                                      //       )
+                                      //     :
+                                      profileFile != null
                                           ? CircleAvatar(
                                               backgroundImage:
                                                   FileImage(profileFile!),

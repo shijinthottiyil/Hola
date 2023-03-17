@@ -26,16 +26,25 @@ class ProfileDrawer extends ConsumerWidget {
       child: SafeArea(
         child: Column(
           children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(user.profilePic),
-              radius: 70,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              user.name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            GestureDetector(
+              onTap: () => navigateToUserProfile(context, user.uid),
+              child: SizedBox(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(user.profilePic),
+                      radius: 70,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      user.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -44,7 +53,6 @@ class ProfileDrawer extends ConsumerWidget {
               title: const Text('My Profile'),
               leading: const Icon(Icons.person),
               onTap: () => navigateToUserProfile(context, user.uid),
-              // onTap: () {},
             ),
             ListTile(
               title: const Text('Log Out'),
@@ -54,10 +62,24 @@ class ProfileDrawer extends ConsumerWidget {
               ),
               onTap: () => logOut(ref),
             ),
-            Switch.adaptive(
-              value: ref.watch(themeNotifierProvider.notifier).mode ==
-                  ThemeMode.dark,
-              onChanged: (value) => toggleTheme(ref),
+            Row(
+              children: [
+                Switch.adaptive(
+                  value: ref.watch(themeNotifierProvider.notifier).mode ==
+                      ThemeMode.dark,
+                  onChanged: (value) => toggleTheme(ref),
+                ),
+                const SizedBox(
+                  width: 13,
+                ),
+                Text(
+                  ref.watch(themeNotifierProvider.notifier).mode ==
+                          ThemeMode.dark
+                      ? 'Light Mode'
+                      : 'Dark Mode',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
             )
           ],
         ),

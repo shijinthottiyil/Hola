@@ -8,6 +8,7 @@ import 'package:hola/core/common/loader.dart';
 import 'package:hola/core/constants/constants.dart';
 import 'package:hola/core/utils.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
+import 'package:hola/features/community/screens/widgets/widget_circleavatar.dart';
 import 'package:hola/models/community_model.dart';
 import 'package:hola/theme/pallete.dart';
 
@@ -59,6 +60,8 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(communityControllerProvider);
     final currentTheme = ref.watch(themeNotifierProvider);
+    final height = MediaQuery.of(context).size.height;
+
     return ref.watch(getCommunityByNameProvider(widget.name)).when(
           data: (community) => Scaffold(
             // ignore: deprecated_member_use
@@ -80,7 +83,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: 200,
+                          height: height / 4.2,
                           child: Stack(
                             children: [
                               GestureDetector(
@@ -94,7 +97,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                       currentTheme.textTheme.bodyMedium!.color!,
                                   child: Container(
                                     width: double.infinity,
-                                    height: 150,
+                                    height: height / 5.7,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -117,19 +120,27 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                 bottom: 20,
                                 left: 20,
                                 child: GestureDetector(
-                                  onTap: selectProfileImage,
-                                  child: profileFile != null
-                                      ? CircleAvatar(
-                                          backgroundImage:
-                                              FileImage(profileFile!),
-                                          radius: 32,
-                                        )
-                                      : CircleAvatar(
-                                          backgroundImage:
-                                              NetworkImage(community.avatar),
-                                          radius: 32,
-                                        ),
-                                ),
+                                    onTap: selectProfileImage,
+                                    child: profileFile != null
+                                        ? WidgetCircleAvatar(
+                                            profileImage:
+                                                FileImage(profileFile!),
+                                          )
+                                        // CircleAvatar(
+                                        //     backgroundImage:
+                                        //         FileImage(profileFile!),
+                                        //     radius: height / 26,
+                                        //   )
+                                        : WidgetCircleAvatar(
+                                            profileImage:
+                                                NetworkImage(community.avatar),
+                                          )
+                                    // CircleAvatar(
+                                    //     backgroundImage:
+                                    //         NetworkImage(community.avatar),
+                                    //     radius: height / 26,
+                                    //   ),
+                                    ),
                               ),
                             ],
                           ),

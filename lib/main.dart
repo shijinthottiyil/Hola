@@ -37,7 +37,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         .watch(authControllerProvider.notifier)
         .getUserData(data.uid)
         .first;
-    ref.read(userProvider.notifier).update((state) => userModel);
+    ref.watch(userProvider.notifier).update((state) => userModel);
   }
 
   @override

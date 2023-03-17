@@ -37,9 +37,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final user = ref.watch(userProvider)!;
     final isGuest = !user.isAuthenticated;
     final currentTheme = ref.watch(themeNotifierProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(
+          'Home',
+          style: currentTheme.textTheme.titleSmall,
+        ),
         leading: Builder(builder: (context) {
           return IconButton(
             onPressed: () => displayDrawer(context),
@@ -78,11 +82,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: '',
+                  label: 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.add),
-                  label: '',
+                  label: 'Create',
                 ),
               ],
               onTap: onPageChanged,

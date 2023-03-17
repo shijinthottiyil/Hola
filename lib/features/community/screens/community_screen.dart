@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
-import 'package:hola/core/common/post_card.dart';
+import 'package:hola/core/common/postcard/post_card.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
+import 'package:hola/features/community/screens/widgets/community_outlinedbtn.dart';
+import 'package:hola/features/community/screens/widgets/widget_circleavatar.dart';
 import 'package:hola/models/community_model.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -27,8 +29,10 @@ class CommunityScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final height = MediaQuery.of(context).size.height;
     final user = ref.watch(userProvider)!;
     final isGuest = !user.isAuthenticated;
+
     return Scaffold(
       body: ref
           .watch(getCommunityByNameProvider(name.replaceAll('%20', '')))
@@ -38,7 +42,7 @@ class CommunityScreen extends ConsumerWidget {
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     SliverAppBar(
-                      expandedHeight: 150,
+                      expandedHeight: height / 5,
                       snap: true,
                       floating: true,
                       flexibleSpace: Stack(
@@ -59,9 +63,8 @@ class CommunityScreen extends ConsumerWidget {
                           [
                             Align(
                               alignment: Alignment.topLeft,
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(community.avatar),
-                                radius: 35,
+                              child: WidgetCircleAvatar(
+                                profileImage: NetworkImage(community.avatar),
                               ),
                             ),
                             const SizedBox(
@@ -79,35 +82,19 @@ class CommunityScreen extends ConsumerWidget {
                                 ),
                                 if (!isGuest)
                                   community.mods.contains(user.uid)
-                                      ? OutlinedButton(
-                                          onPressed: () {
-                                            navigateToModTools(context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 25),
-                                          ),
-                                          child: const Text('Mods Tools'),
+                                      ? CommunityOutlinedbtn(
+                                          buttonFunction: () =>
+                                              navigateToModTools(context),
+                                          buttonName: const Text('Mods Tools'),
                                         )
-                                      : OutlinedButton(
-                                          onPressed: () => joinCommunity(
+                                      : CommunityOutlinedbtn(
+                                          buttonFunction: () => joinCommunity(
                                               ref, community, context),
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 25),
+                                          buttonName: Text(
+                                            community.members.contains(user.uid)
+                                                ? 'Joined'
+                                                : 'Join',
                                           ),
-                                          child: Text(community.members
-                                                  .contains(user.uid)
-                                              ? 'Joined'
-                                              : 'Join'),
                                         ),
                               ],
                             ),

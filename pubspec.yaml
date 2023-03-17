@@ -39,6 +39,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.2.0
+  font_awesome_flutter: ^10.4.0
   fpdart: ^0.4.1
   google_sign_in: ^6.0.1
   routemaster: ^1.0.1

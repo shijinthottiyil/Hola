@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
-import 'package:hola/core/common/post_card.dart';
+import 'package:hola/core/common/postcard/post_card.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/post/controller/post_controller.dart';
 import 'package:hola/features/post/widgets/customer_card.dart';

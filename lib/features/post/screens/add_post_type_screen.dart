@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
@@ -8,6 +10,7 @@ import 'package:hola/core/common/loader.dart';
 import 'package:hola/core/utils.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
 import 'package:hola/features/post/controller/post_controller.dart';
+import 'package:hola/features/post/widgets/post_textfield.dart';
 import 'package:hola/models/community_model.dart';
 import 'package:hola/theme/pallete.dart';
 
@@ -140,12 +143,20 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.camera_alt_outlined,
-                              size: 40,
-                            ),
-                          ),
+                          child: bannerFile != null
+                              ? Image.file(bannerFile!)
+                              : const Center(
+                                  child: Icon(
+                                    Icons.camera_alt_outlined,
+                                    size: 40,
+                                  ),
+                                ),
+                          // const Center(
+                          //   child: Icon(
+                          //     Icons.camera_alt_outlined,
+                          //     size: 40,
+                          //   ),
+                          // ),
                           // child: bannerWebFile != null
                           //     ? Image.memory(bannerWebFile!)
                           //     : bannerFile != null
@@ -160,26 +171,35 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
                       ),
                     ),
                   if (isTypeText)
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        filled: true,
-                        hintText: 'Enter Description here',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(18),
-                      ),
+                    PostTextField(
+                      textEditingController: descriptionController,
                       maxLines: 5,
+                      hintText: 'Enter Description here',
                     ),
+                  // TextField(
+                  //   controller: descriptionController,
+                  //   decoration: const InputDecoration(
+                  //     filled: true,
+                  //     hintText: 'Enter Description here',
+                  //     border: InputBorder.none,
+                  //     contentPadding: EdgeInsets.all(18),
+                  //   ),
+                  //   maxLines: 5,
+                  // ),
                   if (isTypeLink)
-                    TextField(
-                      controller: linkController,
-                      decoration: const InputDecoration(
-                        filled: true,
-                        hintText: 'Enter link here',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(18),
-                      ),
+                    PostTextField(
+                      textEditingController: linkController,
+                      hintText: 'Enter link here',
                     ),
+                  // TextField(
+                  //   controller: linkController,
+                  //   decoration: const InputDecoration(
+                  //     filled: true,
+                  //     hintText: 'Enter link here',
+                  //     border: InputBorder.none,
+                  //     contentPadding: EdgeInsets.all(18),
+                  //   ),
+                  // ),
                   const SizedBox(height: 20),
                   const Align(
                     alignment: Alignment.topLeft,
