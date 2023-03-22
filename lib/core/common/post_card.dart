@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
 import 'package:hola/core/constants/constants.dart';
@@ -10,92 +13,126 @@ import 'package:hola/features/post/controller/post_controller.dart';
 import 'package:hola/models/post_model.dart';
 import 'package:hola/theme/pallete.dart';
 import 'package:routemaster/routemaster.dart';
+import 'package:video_player/video_player.dart';
 
-class PostCard extends ConsumerWidget {
+class PostCard extends ConsumerStatefulWidget {
   final Post post;
   const PostCard({
     super.key,
     required this.post,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _PostCardState();
+  }
+}
+
+class _PostCardState extends ConsumerState<PostCard> {
+  late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
+  bool isPlaying = true;
+
   void deletePost(WidgetRef ref, BuildContext context) async {
-    ref.read(postControllerProvider.notifier).deletePost(post, context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Post'),
+          content: const Text('Confirm Delete'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                ref
+                    .read(postControllerProvider.notifier)
+                    .deletePost(widget.post, context);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void upvotePost(WidgetRef ref) async {
-    ref.read(postControllerProvider.notifier).upvote(post);
+    ref.read(postControllerProvider.notifier).upvote(widget.post);
   }
 
   void downvotePost(WidgetRef ref) async {
-    ref.read(postControllerProvider.notifier).downvote(post);
+    ref.read(postControllerProvider.notifier).downvote(widget.post);
   }
 
   void awardPost(WidgetRef ref, String award, BuildContext context) async {
     ref
         .read(postControllerProvider.notifier)
-        .awardPost(post: post, award: award, context: context);
+        .awardPost(post: widget.post, award: award, context: context);
   }
 
   void navigateToUser(BuildContext context) {
-    Routemaster.of(context).push('/u/${post.uid}');
+    Routemaster.of(context).push('/u/${widget.post.uid}');
   }
 
   void navigateToCommunity(BuildContext context) {
-    Routemaster.of(context).push('/${post.communityName}');
+    Routemaster.of(context).push('/${widget.post.communityName}');
   }
 
   void navigateToComments(BuildContext context) {
-    Routemaster.of(context).push('/post/${post.id}/comments');
+    Routemaster.of(context).push('/post/${widget.post.id}/comments');
+  }
+
+  void videoPlayPauseFn() {
+    if (isPlaying) {
+      _controller.pause();
+      isPlaying = false;
+    } else {
+      _controller.play();
+      isPlaying = true;
+    }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isTypeImage = post.type == 'image';
-    final isTypeText = post.type == 'text';
-    final isTypeLink = post.type == 'link';
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isTypeImage = widget.post.type == 'image';
+    final isTypeVideo = widget.post.type == 'video';
+    final isTypeText = widget.post.type == 'text';
+    final isTypeLink = widget.post.type == 'link';
     final user = ref.watch(userProvider)!;
     final isGuest = !user.isAuthenticated;
 
     final currentTheme = ref.watch(themeNotifierProvider);
 
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: currentTheme.drawerTheme.backgroundColor,
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
+    if (isTypeVideo) {
+      log('check if this the video link ${widget.post.link!}');
+
+      _controller = VideoPlayerController.network(
+        widget.post.link ??
+            'https://www.pexels.com/video/a-close-up-video-of-table-hockey-6557767/',
+      );
+      _initializeVideoPlayerFuture = _controller.initialize();
+
+      _controller.play();
+    }
+
+    return Card(
+      child: Column(
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Column(
-              //   children: [
-              //     IconButton(
-              //       onPressed: () => upvotePost(ref),
-              //       icon: Icon(
-              //         Icons.thumb_up,
-              //         size: 30,
-              //         color: post.upvotes.contains(user.uid)
-              //             ? Pallete.redColor
-              //             : null,
-              //       ),
-              //     ),
-              //     Text(
-              //       '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
-              //       style: const TextStyle(fontSize: 17),
-              //     ),
-              //     IconButton(
-              //       onPressed: () => downvotePost(ref),
-              //       icon: Icon(
-              //         Icons.thumb_down,
-              //         size: 30,
-              //         color: post.downvotes.contains(user.uid)
-              //             ? Pallete.blueColor
-              //             : null,
-              //       ),
-              //     ),
-              //   ],
-              // ),
               Expanded(
                 child: Column(
                   children: [
@@ -103,7 +140,9 @@ class PostCard extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                         vertical: 4,
                         horizontal: 16,
-                      ).copyWith(right: 0),
+                      )
+                      // .copyWith(right: 0),
+                      ,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -116,7 +155,7 @@ class PostCard extends ConsumerWidget {
                                     onTap: () => navigateToCommunity(context),
                                     child: CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                        post.communityProfilePic,
+                                        widget.post.communityProfilePic,
                                       ),
                                       radius: 16,
                                     ),
@@ -128,7 +167,7 @@ class PostCard extends ConsumerWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'r/${post.communityName}',
+                                          widget.post.communityName,
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -137,7 +176,7 @@ class PostCard extends ConsumerWidget {
                                         GestureDetector(
                                           onTap: () => navigateToUser(context),
                                           child: Text(
-                                            'u/${post.username}',
+                                            widget.post.username,
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
@@ -147,7 +186,7 @@ class PostCard extends ConsumerWidget {
                                   ),
                                 ],
                               ),
-                              if (post.uid == user.uid)
+                              if (widget.post.uid == user.uid)
                                 IconButton(
                                   onPressed: () => deletePost(ref, context),
                                   icon: Icon(
@@ -157,15 +196,15 @@ class PostCard extends ConsumerWidget {
                                 ),
                             ],
                           ),
-                          if (post.awards.isNotEmpty) ...[
+                          if (widget.post.awards.isNotEmpty) ...[
                             const SizedBox(height: 5),
                             SizedBox(
                               height: 25,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: post.awards.length,
+                                itemCount: widget.post.awards.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  final award = post.awards[index];
+                                  final award = widget.post.awards[index];
                                   return Image.asset(
                                     Constants.awards[award]!,
                                     height: 23,
@@ -174,47 +213,64 @@ class PostCard extends ConsumerWidget {
                               ),
                             ),
                           ],
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(
-                              post.title,
-                              style: const TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          Text(
+                            widget.post.title,
+                            style: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          const SizedBox(
+                            height: 10,
                           ),
                           if (isTypeImage)
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.35,
                               width: double.infinity,
                               child: Image.network(
-                                post.link!,
+                                widget.post.link!,
                                 fit: BoxFit.cover,
                               ),
                             ),
-                          if (isTypeLink)
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 18),
-                              child: AnyLinkPreview(
-                                displayDirection:
-                                    UIDirection.uiDirectionHorizontal,
-                                link: post.link!,
+                          if (isTypeVideo)
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.35,
+                              width: double.infinity,
+                              child: FutureBuilder(
+                                future: _initializeVideoPlayerFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    // If the VideoPlayerController has finished initialization, use
+                                    // the data it provides to limit the aspect ratio of the video.
+                                    return GestureDetector(
+                                      onTap: videoPlayPauseFn,
+                                      child: AspectRatio(
+                                        aspectRatio:
+                                            _controller.value.aspectRatio,
+                                        // Use the VideoPlayer widget to display the video.
+                                        child: VideoPlayer(_controller),
+                                      ),
+                                    );
+                                  } else {
+                                    // If the VideoPlayerController is still initializing, show a
+                                    // loading spinner.
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
                               ),
+                            ),
+                          if (isTypeLink)
+                            AnyLinkPreview(
+                              displayDirection:
+                                  UIDirection.uiDirectionHorizontal,
+                              link: widget.post.link!,
                             ),
                           if (isTypeText)
-                            Container(
-                              alignment: Alignment.bottomLeft,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Text(
-                                post.description!,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
+                            Text(widget.post.description!,
+                                style: currentTheme.textTheme.bodyMedium),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.max,
@@ -225,26 +281,28 @@ class PostCard extends ConsumerWidget {
                                   IconButton(
                                     onPressed:
                                         isGuest ? () {} : () => upvotePost(ref),
-                                    icon: Icon(
-                                      Icons.arrow_upward,
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.circleUp,
                                       size: 30,
-                                      color: post.upvotes.contains(user.uid)
-                                          ? Pallete.redColor
-                                          : null,
+                                      color:
+                                          widget.post.upvotes.contains(user.uid)
+                                              ? Pallete.blueColor
+                                              : null,
                                     ),
                                   ),
                                   Text(
-                                    '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
+                                    '${widget.post.upvotes.length - widget.post.downvotes.length == 0 ? 'Vote' : widget.post.upvotes.length - widget.post.downvotes.length == -1 ? '' : widget.post.upvotes.length - widget.post.downvotes.length}',
                                     style: const TextStyle(fontSize: 17),
                                   ),
                                   IconButton(
                                     onPressed: isGuest
                                         ? () {}
                                         : () => downvotePost(ref),
-                                    icon: Icon(
-                                      Icons.arrow_downward,
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.circleDown,
                                       size: 30,
-                                      color: post.downvotes.contains(user.uid)
+                                      color: widget.post.downvotes
+                                              .contains(user.uid)
                                           ? Pallete.blueColor
                                           : null,
                                     ),
@@ -261,14 +319,14 @@ class PostCard extends ConsumerWidget {
                                     ),
                                   ),
                                   Text(
-                                    '${post.commentCount == 0 ? 'Comment' : post.commentCount}',
+                                    '${widget.post.commentCount == 0 ? 'Comment' : widget.post.commentCount}',
                                     style: const TextStyle(fontSize: 17),
                                   ),
                                 ],
                               ),
                               ref
                                   .watch(getCommunityByNameProvider(
-                                      post.communityName))
+                                      widget.post.communityName))
                                   .when(
                                     data: (data) {
                                       if (data.mods.contains(user.uid)) {
@@ -340,9 +398,8 @@ class PostCard extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
+        ],
+      ),
     );
   }
 }

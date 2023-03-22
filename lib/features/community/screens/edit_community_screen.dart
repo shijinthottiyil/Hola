@@ -7,8 +7,10 @@ import 'package:hola/core/common/error_text.dart';
 import 'package:hola/core/common/loader.dart';
 import 'package:hola/core/constants/constants.dart';
 import 'package:hola/core/utils.dart';
+import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/features/community/controller/community_controller.dart';
 import 'package:hola/features/community/screens/widgets/widget_circleavatar.dart';
+import 'package:hola/features/user_profile/repositrory/user_profile_repository.dart';
 import 'package:hola/models/community_model.dart';
 import 'package:hola/theme/pallete.dart';
 

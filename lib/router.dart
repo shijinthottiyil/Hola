@@ -6,6 +6,7 @@ import 'package:hola/features/community/screens/create_community_screen.dart';
 import 'package:hola/features/community/screens/edit_community_screen.dart';
 import 'package:hola/features/community/screens/mod_tools_screen.dart';
 import 'package:hola/features/home/screens/home_screen.dart';
+import 'package:hola/features/payment/screens/payment_screen.dart';
 import 'package:hola/features/post/screens/add_post_type_screen.dart';
 import 'package:hola/features/post/screens/comments_screen.dart';
 import 'package:hola/features/user_profile/screens/edit_profile_screen.dart';
@@ -21,6 +22,9 @@ final loggedOutRoute = RouteMap(routes: {
 //loggedInRoute
 final loggedInRoute = RouteMap(routes: {
   '/': (_) => const MaterialPage(child: HomeScreen()),
+  '/payment': (_) => const MaterialPage(
+        child: PaymentScreen(),
+      ),
   '/create-community': (_) =>
       const MaterialPage(child: CreateCommunityScreen()),
   '/:name': (route) => MaterialPage(

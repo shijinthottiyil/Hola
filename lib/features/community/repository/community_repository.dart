@@ -14,10 +14,22 @@ final communityRepositoryProvider = Provider((ref) {
 
 class CommunityRepository {
   final FirebaseFirestore _firestore;
+
+  CollectionReference get _posts {
+    return _firestore.collection(FirebaseConstants.postsCollection);
+  }
+
+  CollectionReference get _communities {
+    return _firestore.collection(FirebaseConstants.communitiesCollection);
+  }
+
   CommunityRepository({required FirebaseFirestore firestore})
       : _firestore = firestore;
 
   FutureEither<void> createCommunity(Community community) async {
+    //Create Community is the Fn to create a community
+    //This is a FutureEither fn. Which means on success void is returned and on failure Failure class is returned
+
     try {
       var communityDoc = await _communities.doc(community.name).get();
       if (communityDoc.exists) {
@@ -157,10 +169,4 @@ class CommunityRepository {
               .toList(),
         );
   }
-
-  CollectionReference get _posts =>
-      _firestore.collection(FirebaseConstants.postsCollection);
-
-  CollectionReference get _communities =>
-      _firestore.collection(FirebaseConstants.communitiesCollection);
 }

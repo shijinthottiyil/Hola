@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+//Normal Providers are read only we can cannot change their values
+
 final firestoreProvider = Provider((ref) {
   return FirebaseFirestore.instance;
 });

@@ -179,6 +179,52 @@ class PostController extends StateNotifier<bool> {
     });
   }
 
+  void shareVideoPost({
+    required BuildContext context,
+    required String title,
+    required Community selectedCommunity,
+    required File? file,
+    // required Uint8List? webFile,
+  }) async {
+    state = true;
+    String postId = const Uuid().v1();
+    final user = _ref.read(userProvider)!;
+    final videoRes = await _storageRepository.storeFile(
+      path: 'posts/${selectedCommunity.name}',
+      id: postId,
+      file: file,
+      // webFile: webFile,
+    );
+
+    videoRes.fold((l) => showSnackBar(context, l.message), (r) async {
+      final Post post = Post(
+        id: postId,
+        title: title,
+        communityName: selectedCommunity.name,
+        communityProfilePic: selectedCommunity.avatar,
+        upvotes: [],
+        downvotes: [],
+        commentCount: 0,
+        username: user.name,
+        uid: user.uid,
+        type: 'video',
+        createdAt: DateTime.now(),
+        awards: [],
+        link: r,
+      );
+
+      final res = await _postRepository.addPost(post);
+      _ref
+          .read(userProfileControllerProvider.notifier)
+          .updateUserKarma(UserKarma.imagePost);
+      state = false;
+      res.fold((l) => showSnackBar(context, l.message), (r) {
+        showSnackBar(context, 'Posted successfully!');
+        Routemaster.of(context).pop();
+      });
+    });
+  }
+
   Stream<List<Post>> fetchUserPosts(List<Community> communities) {
     if (communities.isNotEmpty) {
       return _postRepository.fetchUserPosts(communities);

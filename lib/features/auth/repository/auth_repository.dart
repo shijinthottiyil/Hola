@@ -29,6 +29,8 @@ class AuthRepository {
     return _firestore.collection(FirebaseConstants.usersCollection);
   }
 
+  Stream<User?> get authStateChange => _auth.authStateChanges();
+
   AuthRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth auth,
@@ -37,9 +39,11 @@ class AuthRepository {
         _auth = auth,
         _googleSignIn = googleSignIn;
 
-  Stream<User?> get authStateChange => _auth.authStateChanges();
-
   FutureEither<UserModel> signInWithGoogle(bool isFromLogin) async {
+    /*This FutureEithe<UserModel>signInWithGoogle  Fn. is used for Google SignIN
+    Fn means On success this fn will return the UserModel or on error this fn will return Failure Class we defined this typedef in typedef.dart file
+    */
+
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final googleAuth = await googleUser?.authentication;
@@ -48,13 +52,14 @@ class AuthRepository {
         idToken: googleAuth?.idToken,
       );
       UserCredential userCredential;
+      UserModel userModel;
+
       if (isFromLogin) {
         userCredential = await _auth.signInWithCredential(credential);
       } else {
-        userCredential = await _auth.signInWithCredential(credential);
+        userCredential =
+            await _auth.currentUser!.linkWithCredential(credential);
       }
-
-      UserModel userModel;
 
       if (userCredential.additionalUserInfo!.isNewUser) {
         userModel = UserModel(
@@ -107,7 +112,9 @@ class AuthRepository {
 
       return right(userModel);
     } on FirebaseException catch (e) {
-      throw e.message!;
+      throw e
+          .message!; /*this throw is used to throw error to the catch block like 'if we got a firebase exception we will throw that that out" and
+      we can  catch that in the catch block */
     } catch (e) {
       return left(Failure(e.toString()));
     }

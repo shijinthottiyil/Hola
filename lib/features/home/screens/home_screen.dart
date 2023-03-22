@@ -34,8 +34,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider)!;
-    final isGuest = !user.isAuthenticated;
+    final user = ref.watch(userProvider);
+    final isGuest = user?.isAuthenticated == null ? true : false;
     final currentTheme = ref.watch(themeNotifierProvider);
 
     return Scaffold(
@@ -64,7 +64,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             builder: (context) => IconButton(
               onPressed: () => displayEndDrawer(context),
               icon: CircleAvatar(
-                backgroundImage: NetworkImage(user.profilePic),
+                backgroundImage: NetworkImage(user?.profilePic ??
+                    'https://www.inprocorp.com/globalassets/color--finish-images/standard-solid/buoyantblue.jpg?width=500&height=500&mode=crop'),
               ),
             ),
           ),

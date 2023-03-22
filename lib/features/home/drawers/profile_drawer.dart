@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hola/features/auth/controller/auth_controller.dart';
 import 'package:hola/theme/pallete.dart';
 import 'package:routemaster/routemaster.dart';
@@ -13,6 +14,10 @@ class ProfileDrawer extends ConsumerWidget {
 
   void navigateToUserProfile(BuildContext context, String uid) {
     Routemaster.of(context).push('/u/$uid');
+  }
+
+  void navigateToPaymentScreen(BuildContext context) {
+    Routemaster.of(context).push('/payment');
   }
 
   void toggleTheme(WidgetRef ref) {
@@ -62,9 +67,15 @@ class ProfileDrawer extends ConsumerWidget {
               ),
               onTap: () => logOut(ref),
             ),
+            ListTile(
+              title: const Text('Contribute'),
+              leading: const FaIcon(FontAwesomeIcons.handHoldingDollar),
+              onTap: () => navigateToPaymentScreen(context),
+            ),
             Row(
               children: [
                 Switch.adaptive(
+                  inactiveTrackColor: Colors.amber,
                   value: ref.watch(themeNotifierProvider.notifier).mode ==
                       ThemeMode.dark,
                   onChanged: (value) => toggleTheme(ref),

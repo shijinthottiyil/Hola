@@ -1,3 +1,5 @@
+//Enum is simply a special kind of class used to represent a fixed number of constant values.
+
 enum ThemeMode {
   light,
   dark,
